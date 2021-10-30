@@ -152,9 +152,9 @@ namespace OLSoftware.API.Controllers
                 if (project == null)
                     return Ok(new ResponseDTO { Code = (int)HttpStatusCode.NotFound, Message = "NotFound" });
 
-                if (context.ProjectLanguages.Any(x => x.Id == id))
-                    throw new Exception("Dependencies");
-
+                if (context.ProjectLanguages.Any(x => x.ProjectId == id))                
+                    context.ProjectLanguages.RemoveRange(context.ProjectLanguages.Where(x => x.ProjectId == id));
+                
                 context.Projects.Remove(project);
                 context.SaveChanges();
 
