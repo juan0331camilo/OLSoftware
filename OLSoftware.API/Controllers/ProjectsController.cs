@@ -22,6 +22,28 @@ namespace OLSoftware.API.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet]
+        [Route("GetReport")]
+        public IActionResult GetReport()
+        {
+            var reportDTO = context.Projects
+                .Include(x => x.Customer)
+                .Include(x => x.ProjectState)
+                .Select(x => new ReportDTO
+                {
+                    CustomerName = $"{x.Customer.FirstMidName} {x.Customer.LastName}",
+                    CustomerTelephone = x.Customer.Telephone,
+                    ProjectName = x.Name,
+                    ProjectStartDate = x.StartDate,
+                    ProjectEndDate = x.EndDate,
+                    ProjectHours = x.Hours,
+                    ProjectPrice = x.Price,
+                    ProjectStateName = x.ProjectState.Name
+                }).ToList();
+
+            return Ok(new ResponseDTO { Code = (int)HttpStatusCode.OK, Data = reportDTO });
+        }
+
         /// <summary>
         /// Obtiene una lista de objetos.
         /// </summary>

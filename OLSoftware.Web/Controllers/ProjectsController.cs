@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using OLSoftware.BL.DTOs;
 using OLSoftware.BL.Helpers;
 using OLSoftware.BL.Services.Implements;
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace OLSoftware.Web.Controllers
@@ -22,6 +24,21 @@ namespace OLSoftware.Web.Controllers
 
             var projects = (List<ProjectDTO>)responseDTO.Data;
             return View(projects);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Download()
+        {
+            var responseDTO = await apiService.RequestAPI<Dictionary<string, string>>(Endpoints.URL_BASE_FUNCTION,
+                Endpoints.GET_PROJECTS_REPORT,
+                null,
+                ApiService.Method.Get,
+                false);
+
+            var data = (Dictionary<string, string>)responseDTO.Data;
+            var fileDownload = Convert.FromBase64String(data["fileBase64Str"]);
+
+            return File(fileDownload, MediaTypeNames.Application.Octet, "Report.txt");
         }
 
         [HttpGet]
